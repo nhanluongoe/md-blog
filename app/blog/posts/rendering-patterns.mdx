@@ -1,0 +1,103 @@
+---
+title: 'Popular rendering patterns - CSR, SSG, and SSR'
+publishedAt: '2024-04-22'
+tags: ['rendering pattern']
+draft: false
+summary: 'Look into CSR, SSG, and Traditional SSR rendering patterns in web development.'
+---
+
+For the first part of this series, we will look into three popular rendering patterns in web development:
+
+- Client-Side Rendering (CSR)
+- Server-Side Rendering (SSR)
+- Static Site Generation (SSG)
+
+# CSR
+
+CSR is the most common rendering pattern in modern web development. In CSR, the browser downloads a minimal HTML document and Javascript bundles. Most of the application logic is executed on the client-side, which means the the client is reponsible for rendering the UI with the data fetched from the server via API calls. The entire web application is loaded on the first request. As the user navigates, there will be no new request to the server for rendering the pages. It became popular as a method of building single-page applications (SPAs).
+
+<p align="center">![CSR Sequence Diagram](/static/images/blog/csr-sequence-diagram.png)</p>
+
+{/* title Client-Side Rendering
+Client->Server: GET /api/products?page=1
+Server-->Client: JSON list of products
+Client->Client: Render list of products */}
+
+## Pros
+
+- Fast navigation between pages without a page fresh.
+- Rich user interaction applications.
+- Only need static server.
+
+## Cons
+
+- Not SEO-friendly because the content is not rendered fast enough for the search engine to index it.
+- Slow initial load time due to the large Javascript bundle size.
+
+## When to use
+
+- Building a web application that requires rich user interaction.
+- The content is dynamic and changes frequently.
+- SEO is not a concern.
+
+# SSG
+
+SSG is a rendering pattern where the HTML pages are generated at build time. The server generates the HTML pages for all the routes in the application during the build process. The generated HTML pages are then served to the client when requested. The content is static and does not change until the next build.
+
+<p align="center">![SSG Sequence Diagram](/static/images/blog/ssg-sequence-diagram.png)</p>
+
+{/* title Static Site Generation
+participant Client
+participant Server
+Server->Server: Generate HTML at build time
+Client->Server: GET /products?page=1
+Server-->Client: HTML list of products */}
+
+## Pros
+
+- Fast initial load time because the HTML pages are pre-generated.
+- SEO-friendly because the content is available to the search engine to index.
+- Low server load because the server only needs to serve static files.
+- Easily cacheable by CDN.
+- Need a dedicated server.
+
+## Cons
+
+- The content is static and does not change until the next build.
+- The build process can be slow for large websites.
+
+## When to use
+
+- Building a blog or a website with static content.
+- SEO is a critical factor.
+- Doesn't require rich user interaction.
+
+# Traditional SSR
+
+Traditional SSR is a variation of SSG rendering pattern where the server generates HTML pages on each request. The server is responsible for generating the HTML pages and serving them to the client.
+
+<p align="center">![SSR Sequence Diagram](/static/images/blog/ssr-sequence-diagram.png)</p>
+
+{/* title Server-Side Rendering
+participant Client
+participant Server
+Client->Server: GET /products?page=1
+Server->Server: Generate HTML
+Server-->Client: HTML list of products */}
+
+## Pros
+
+- SEO-friendly because the content is generated on the server.
+- Cacheable by CDN.
+
+## Cons
+
+- Slow load time and navigation because the server needs to generate the HTML pages on each request.
+- High server load because the server needs to generate the HTML pages on each request in case of high traffic.
+- Need a dedicated server.
+
+## When to use
+
+- Building web applications with dynamic content while remaining SEO-friendly.
+
+In the [next part](/blog/rendering-patterns-2) of this series, we will look into some hybrid rendering patterns that combine the benefits of both client-side and server-side rendering: Icremental Static Regeneration (ISR), Progressive Hydration (PH) and Selective Hydration (SH). 

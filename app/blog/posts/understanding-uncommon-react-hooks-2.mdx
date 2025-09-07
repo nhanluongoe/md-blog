@@ -1,0 +1,220 @@
+---
+title: 'Understanding uncommon React hooks - useImperativeHandle'
+publishedAt: '2024-05-15'
+tags: ['react']
+draft: false
+summary: 'Continue with useImperativeHandle and what it can be used for.'
+---
+
+In the [previous post](/blog/understanding-uncommon-react-hooks-1), we looked into the `useLayoutEffect` hook in React and how it differs from the `useEffect` hook. In this post, we will continue with another uncommon React hook called `useImperativeHandle`.
+
+## What is `useImperativeHandle`?
+
+Based on the definition from the [React documentation](https://react.dev/reference/react/useImperativeHandle):
+
+> `useImperativeHandle` is a React hook that lets you customize the handle exposed as a ref.
+
+### API
+
+```tsx
+useImperativeHandle(ref, createHandle, dependencies?)
+```
+
+- `ref`: The `ref` you received as the second argument from the `forwardRef` render function.
+- `createHandle`: A function that returns the object including the methods you want to expose.
+- `dependencies`: An optional array of dependencies. If provided, the hook will re-run if any of the dependencies change which means that the newly created handle will be assigned to the `ref`.
+- Returns `undefined`.
+
+## How `useImperativeHandle` works?
+
+It's pretty straight forward as of its definition. You got handlers that you want expose to somewhere (like a parent component) then you need to use `useImperativeHandle` to make them available via the `ref` object. Let's take a look at an example:
+
+```tsx
+const Parent = () => {
+  const ref = useRef(null)
+
+  const handleClick = () => {
+    // Call the sayHello method from the Child component via "ref"
+    ref.current.sayHello()
+  }
+
+  return (
+    <div>
+      <Child ref={ref} />
+      <button click={handleClick}>Hello?</button>
+    </div>
+  )
+}
+
+const Child = forwardRef((props, ref) => {
+  useImperativeHandle(ref, () => ({
+    // Expose the sayHello method to outside
+    sayHello: () => {
+      console.log('Hello from Child component')
+    },
+  }))
+
+  return <div>Child component</div>
+})
+```
+
+In this simple example, we have a `Parent` component that renders a `Child` component and a button. The `Child` component exposes a `sayHello` method via the `ref` object. When the button is clicked, the `Parent` component calls the `sayHello` method from the `Child` component.
+
+Now, we can see how `useImperativeHandle` works. Let's dive in a little bit deeper.
+
+## When to use `useImperativeHandle`?
+
+### Expose a custom ref handle to the parent component
+
+Given that you only want to expose some methods of a DOM node to to the parent component, `useImperativeHandle` is the way to go.
+
+```tsx
+const CustomInput = forwardRef((props, ref) => {
+  const inputRef = useRef(null)
+
+  useImperativeHandle(ref, () => ({
+    // Expose the focus and blur methods to outside
+    focus: () => {
+      inputRef.current.focus()
+    },
+    blur: () => {
+      inputRef.current.blur()
+    },
+  }))
+
+  return <input ref={inputRef} />
+})
+
+const Parent = () => {
+  const ref = useRef(null)
+
+  const handleClick = () => {
+    ref.current.focus()
+
+    // This won't work because the ref is only exposed with the focus and blur methods
+    // ref.current.value = 'Hello';
+  }
+
+  return (
+    <div>
+      <CustomInput ref={ref} />
+      <button click={handleClick}>Focus</button>
+    </div>
+  )
+}
+```
+
+### Expose imperative methods
+
+The methods that you want to expose don't have to be matched to DOM methods exactly. You can expose any methods you want. For example, you can expose a custom "scrollToAndShine" method to scroll to a component's position and change its background.
+
+```tsx
+const ScrollableComponent = forwardRef((props, ref) => {
+  const componentRef = useRef(null)
+
+  useImperativeHandle(ref, () => ({
+    // Expose the scrollTo method to outside
+    scrollToAndShine: () => {
+      componentRef.current.scrollIntoView({ behavior: 'smooth' })
+      componentRef.current.style.background = 'yellow'
+    },
+  }))
+
+  return <div ref={componentRef}>{props.children}</div>
+})
+
+const Parent = () => {
+  const ref = useRef(null)
+
+  const handleClick = () => {
+    ref.current.scrollTo()
+  }
+
+  return (
+    <div>
+      <button onClick={handleClick}>Scroll</button>
+      <div style={{ height: '1500px' }}></div>
+      <ScrollableComponent ref={ref}>
+        <div style={{ height: '200px' }}>Scroll to me</div>
+      </ScrollableComponent>
+    </div>
+  )
+}
+```
+
+In the example above, the `ScrollableComponent` exposes a `scrollToAndShine` method that scrolls to the component's position and changes its background color to yellow. The `Parent` component calls the `scrollToAndShine` method when the button is clicked.
+
+Even though, `useImperativeHandle` lets you expose any methods you want, it's recommended to only expose imperative methods that are necessary when you can't achieve the same functionality with props. Lets consider the following example:
+
+```tsx
+const MyVideoPlayer = forwardRef((props, ref) => {
+  const videoRef = useRef(null)
+
+  useImperativeHandle(ref, () => ({
+    // Expose the play and pause method to outside
+    play: () => {
+      videoRef.current.play()
+    },
+    pause: () => {
+      videoRef.current.pause()
+    },
+  }))
+
+  return <video ref={videoRef} />
+})
+
+const Parent = () => {
+  const ref = useRef(null)
+
+  const handleClick = () => {
+    ref.current.play()
+  }
+
+  return (
+    <div>
+      <MyVideoPlayer ref={ref} />
+      <button click={handleClick}>Play</button>
+    </div>
+  )
+}
+```
+
+It seems very convenient to expose the `play` and `pause` methods of the video player like that, right? But, it's not recommended to use `useImperativeHandle` in this case because you can achieve the same by using props as below:
+
+```tsx
+const MyVideoPlayer = ({ isPlaying }) => {
+  const videoRef = useRef(null)
+
+  useEffect(() => {
+    if (isPlaying) {
+      videoRef.current.play()
+    } else {
+      videoRef.current.pause()
+    }
+  }, [isPlaying])
+
+  return <video ref={videoRef} />
+}
+
+const Parent = () => {
+  const [isPlaying, setIsPlaying] = useState(false)
+
+  const handleClick = () => {
+    setIsPlaying(!isPlaying)
+  }
+
+  return (
+    <div>
+      <MyVideoPlayer isPlaying={isPlaying} />
+      <button click={handleClick}>{isPlaying ? 'Pause' : 'Play'}</button>
+    </div>
+  )
+}
+```
+
+In this way, it is more declarative and easier to understand because of the convention of one-way data flow in React.
+
+## Conclusion
+
+- `useImperativeHandle` helps you to expose imperative methods to the outside.
+- Should only use `useImperativeHandle` when you can't achieve the same functionality with props.

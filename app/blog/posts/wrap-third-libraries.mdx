@@ -1,0 +1,69 @@
+---
+title: 'Hide your 3rd-party libraries behind your own API'
+publishedAt: '2024-04-17'
+tags: ['best practice']
+draft: false
+summary: 'How to wrap 3rd-party libraries in your own API to make your codebase more maintainable.'
+---
+
+Have you ever come across a situation which you need to replace a 3rd-party library with another one? If you have, you know how painful it can be. You have to search through your entire codebase to find all the places where you've used the library and replace them with the new one. This process can be time-consuming and error-prone.
+
+To avoid this problem, you can hide the 3rd-party library behind your own API. This way, you only need to change the implementation of your API when you want to replace the library. With this small change, you and your team will be thankful at a some point in the future when you need to replace the library.
+
+Let's see how you can do this with an example.
+
+Suppose you are using Axios as a 3rd-party library to make HTTP requests in your application. You can wrap Axios in your own API like this (eg. `httpClient.js`):
+
+```js
+// httpClient.js
+import axios form 'axios';
+
+export async function get(url, params) {
+  const res = await axios.get(url, { params });
+  return res.data;
+}
+
+export async function post(url, data) {
+  const res = await axios.post(url, data);
+  return res.data;
+}
+```
+
+And you use this API in your application like this:
+
+```js
+// main.js
+import { get, post } from './httpClient'
+
+async function main() {
+  const pokemons = await get('https://pokeapi.co/api/v2/pokemon')
+  console.log(pokemons)
+}
+```
+
+If you ever need to switch to a different library, say Fetch, for some reason, you only need to change the implementation of `httpClient.js` and your application code will remain the same instead of changing, for example 100 places in your codebase.
+
+```js
+// httpClient.js
+import axios form 'axios';
+
+export async function get(url, params) {
+  const res = await fetch(url + new URLSearchParams(params));
+  const data = await response.json();
+  return data;
+}
+
+export async function post(url, data) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+    body: JSON.stringify(data),
+  });
+  const data = await response.json();
+  return res.data;
+}
+
+```
+I hope this tip will help you in building a more maintanable codebase.

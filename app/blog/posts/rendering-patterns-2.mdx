@@ -1,0 +1,124 @@
+---
+title: 'Popular rendering patterns - ISR, PH, and SH'
+publishedAt: '2024-04-23'
+tags: ['rendering pattern']
+draft: false
+summary: 'Look into some hybrid rendering patterns such as ISR, PH and SH'
+---
+
+In the [first part](/blog/rendering-patterns) of this series, we looked into three popular rendering patterns in web development: Client-Side Rendering (CSR), Server-Side Rendering (SSR), and Static Site Generation (SSG). In this part, we will look into some hybrid rendering patterns that combine the benefits of both client-side and server-side rendering: Icremental Static Regeneration (ISR), Progressive Hydration (PH) and Selective Hydration (SH).
+
+# ISR 
+
+ISR is a hybrid rendering pattern that combines the benefits of SSG and SSR. In ISR, some specific HTML pages are generated at build time like SSG, but the server can regenerate the dynamic pages on-demand when user requests them. The server can revalidate the data and regenerate the page when a request is made. This allows the server to serve the latest content to the client without rebuilding the entire site.
+
+### Revalidate after a specific time
+
+<p align="center">![ISR Sequence Diagram](/static/images/blog/isr-sequence-diagram-1.png)</p>
+
+{/* title Incremental Static Regeneration
+participant Client
+participant Server
+Server->Server: Generate "/posts" at build time
+note right of Server:Revalidate time: 10 min
+Client->Server: GET /posts
+Server-->Client: HTML pre-rendered "/posts"
+note left of Client:Request after 10 min
+Client->Server: GET /posts
+Server->Server: Regenerate "/posts"
+Server-->Client: HTML new regenerated "/posts" */}
+
+### Revalidate on demand 
+
+<p align="center">![ISR Sequence Diagram](/static/images/blog/isr-sequence-diagram-2.png)</p>
+
+{/* title Incremental Static Regeneration
+participant Client
+participant Server
+Server->Server: Generate "/posts" at build time
+Client->Server: GET /posts
+Server-->Client: HTML pre-rendered "/posts"
+]->Server: POST /api/revalidate/posts
+Server->Server: Regenerate "/posts"
+Client->Server: GET /posts
+Server-->Client: HTML new regenerated "/posts" */}
+
+## Pros
+
+ISR provides pros of SSG and:
+
+- Be able to serve dynamic data without trigger a rebuild.
+
+## Cons
+
+- The content is not always up-to-date.
+- Need a dedicated server.
+
+## When to use
+
+- Building a not-so-dynamic content website.
+
+
+# PH
+
+Imagine that on the initial load, you have all the HTML and CSS for the browser to render the page. But the Javascript bundles are not loaded yet so clicking a button means nothing, they aren't interactive yet. The handlers only get attached once the Javascript bundles are loaded. This process is call <i>Hydration</i>.
+
+Compare to SSR, Javascript bundles are loaded once which may cause bad user experience if the bundles are large until the entire application is fully hydrated. PH will request a minimum necessary Javascript to progressively hydrate the DOM nodes over time.
+
+<p align="center">![PH Sequence Diagram](/static/images/blog/ph-sequence-diagram.png)</p>
+
+{/* title Progressive Hydration
+participant Client
+participant Server
+Client->Server: GET /
+Server->Server: Generate entire markup
+Server-->Client: Markup HTML/CSS
+Server-->Client: Javascript chunk (onClick)
+Client->Client: Attach handler
+Server-->Client: Javascript chunk (onMouseMove)
+Client->Client: Attach handler
+Server-->Client: Javascript chunk (onKeyUp)
+Client->Client: Attach handler */}
+
+## Pros
+
+- Reduce bunle size by splitting Javascript bundles into smaller chunks.
+- Allow on-demand loading for infrequently used parts of the page. 
+
+## Cons
+
+- Need a dedicated server
+- Need to determine which part of the page should be hydrated first.
+- Not suitable for web application where every element of the page needs to be available and interactive on load.
+
+## When to use
+
+- Building a web application where some part of the page is more important to the users than others so we can prioritize the hydration of those parts.
+
+# SH
+
+In PH, the browser needs the entire markup to be able to render the page and start progressive hydration. If some part of the markup depend on the external data, the other part of the HTML will be blocked until the data is fetched. SH addresses this issue by allowing streaming the HTML to the browser and get it hydrated as soon as possible without having to wait for the entire markup to be ready.
+
+<p>![SH Sequence Diagram](/static/images/blog/sh-sequence-diagram.png)</p>
+
+{/* title Selective Hydration
+participant Client
+participant Server
+Client->Server: GET /posts
+Server->Server: Generate "Post list" markup
+Server-->Client: "Post list" markup
+Server-->Client: Javascript chunk (onClick)
+Client->Client: Attach handler
+Server->Server: Generate "Comments" markup
+Server-->Client: "Comments" markup
+Server-->Client: Javascript chunk (onMouseMove)
+Client->Client: Attach handler */}
+
+## Pros and cons
+
+- Same as PH but being able to avoid blocking the entire page rendering.
+- User can interact with the page before all the components are hydrated.
+
+## When to use
+
+- Can be used for almost any web application.

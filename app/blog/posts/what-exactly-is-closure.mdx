@@ -1,0 +1,146 @@
+---
+title: 'What exactly is closure?'
+publishedAt: '2024-05-08'
+tags: ['javascript']
+draft: false
+summary: 'A glimpse into the concept of closure in Javascript.'
+---
+
+You might have heard the term "closure" or being asked about it in a job interview. But what exactly is closure? What is it used for and how does it work? In this article, we'll take a look at the concept of closure in Javascript.
+
+## What is closure?
+
+Based on the definition from [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)
+
+> a closure is the combination of a function bundled together (enclosed) with references to its surrounding state (the lexical environment). In other words, a closure gives you access to an outer function's scope from an inner function. In Javascript, closures are created every time a function is created, at function creation time.
+
+An other definition from Kyle Simpson's course [Deep JavaScript Foundations](https://frontendmasters.com/courses/deep-javascript-v3/) which I found it more straightforward:
+
+> A closure is when a function "remembers" its lexical scope even when the function is executed outside that lexical scope.
+
+## How does it work?
+
+Okay, let's break it down. For the first part of the definition, it's pretty straightforward that an inner function has access to the variables of the outer function.
+
+```js
+const outer = () => {
+  const message = 'Hello, '
+  const inner = () => {
+    console.log(message + 'world!')
+  }
+  return inner
+}
+
+const inner = outer()
+inner() // Hello, world!
+```
+
+In the given example, the `inner` function has access to the `message` variable from the `outer` function. This is because the `inner` function is created inside the `outer` function and it has access to the variables of the `outer` function.
+
+For the second part, it says that closures are created every time a function is created. This means that every time you create a function, a closure is created along with it.
+
+```js
+const outer = () => {
+  let count = 0
+  return () => {
+    count++
+    console.log(count)
+  }
+}
+
+const firstIncrement = outer()
+const secondIncrement = outer()
+
+firstIncrement() // 1
+firstIncrement() // 2
+SecondIncrement() // 1
+```
+
+In this example, we have two closures created by calling the `outer` function twice. Each closure has its own `count` variable that is independent of each other.
+
+Could you guess the output of the following example?
+
+```js
+function outer() {
+  let firstCount = 0
+
+  function firstInner() {
+    firstCount++
+    console.log(firstCount)
+  }
+
+  let secondCount = firstCount
+
+  function secondInner() {
+    secondCount++
+    console.log(secondCount)
+  }
+
+  return [firstInner, secondInner]
+}
+
+const [firstIncrement, secondIncrement] = outer()
+firstIncrement()
+firstIncrement()
+secondIncrement()
+```
+
+Let's give it a try and see if you can guess the output.
+
+.
+.
+.
+
+The output will be: `1 2 1`. If you guessed it right, congratulations! If not, don't worry, it's a bit tricky.
+
+When the `outer` function is called, the closure is created for both `firstInner` and `secondInner` functions. Even though they share the same closure but at the time of closure creation, the `secondCount` variable is assigned the value of `firstCount` which is `0`. So, when the `secondIncrement` function is called, it increments the `secondCount` variable from `0` to `1` instead of `2` to `3`.
+
+## What is it used for?
+
+Closures are widely used in Javascript. You might have used it without even realizing it. Here are some common use case of closures:
+
+- **Data privacy**: You can create private variables using closures. This is useful when you want to hide some data from the outside world.
+
+```js
+const counter = () => {
+  let count = 0
+  return {
+    increment: () => count++,
+    decrement: () => count--,
+    getCount: () => count,
+  }
+}
+```
+
+In the above example, the `count` variable is private and can only be accessed through the returned object. This way, you can prevent the `count` variable from being modified from the outside. In the future, if somehome the `count` variable gets an expected value, you can easily debug it because it's only modified by the `increment` and `decrement` functions.
+
+- **Currying**: Closures are used in currying. Currying is a technique of evaluating a function with multiple arguments into a sequence of functions with a single argument.
+
+```js
+const add = (a) => (b) => a + b
+
+const addOne = add(1)
+const three = addOne(2) // 3
+```
+
+In the above example, the `add` function returns another function that takes a single argument. This is possible because of closures. The inner function `(b) => a + b` has access to the `a` variable form the outer function.
+
+- **Event listeners**: Closures are used in event listeners. When you add an event listener to an element, you pass a callback funciton to it. And this callback function has access to the variables of the outer function.
+
+```js
+const message = 'Hello, world!'
+const button = document.querySelector('button')
+button.addEventListener('click', () => {
+  console.log(message)
+})
+```
+
+In the above example, the event listener callback function has access to the `message` variable. So whenever the button is clicked, the callback function will be triggered and log the `Hello, world!` message to the console no matter when and where the callback fuction is executed, that's the power of closures.
+
+## Conclusion
+
+Closure is a powerful concept. Key poins to remember about closures are:
+
+- Access to the variables of the outer function (its lexical scope) from an inner function.
+- The closure is created every time a function is created.
+- Wherever you pass the function, it continues to have access to the origin scope where it's defined.
