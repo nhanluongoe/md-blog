@@ -1,58 +1,45 @@
 import siteMetaData from 'app/siteMetadata';
+import SocialIcon from './social-icons';
 
-function ArrowIcon() {
-  return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 12 12"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M2.07102 11.3494L0.963068 10.2415L9.2017 1.98864H2.83807L2.85227 0.454545H11.8438V9.46023H10.2955L10.3097 3.09659L2.07102 11.3494Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
+interface FooterItem {
+  name: string;
+  icon: 'github' | 'linkedin';
+  href: string;
 }
 
-const footerItems = [
-  {
-    name: 'rss',
-    href: '/rss',
-  },
+const footerItems: FooterItem[] = [
   {
     name: 'github',
+    icon: 'github',
     href: siteMetaData.github,
   },
   {
     name: 'linkedin',
+    icon: 'linkedin',
     href: siteMetaData.linkedin,
   },
 ];
 
 export default function Footer() {
   return (
-    <footer className="mb-16">
-      <ul className="font-sm mt-8 flex flex-col space-x-0 space-y-2 text-neutral-600 md:flex-row md:space-x-4 md:space-y-0 dark:text-neutral-300">
-        {footerItems.map((item) => (
-          <li key={item.name}>
-            <a
-              className="flex items-center transition-all hover:text-neutral-800 dark:hover:text-neutral-100"
-              rel="noopener noreferrer"
-              target="_blank"
+    <footer>
+      <div className="mb-2 mt-16 flex flex-col items-center">
+        <div className="mb-3 flex space-x-4">
+          {footerItems.map((item) => (
+            <SocialIcon
+              key={item.name}
+              kind={item.icon}
+              size={6}
               href={item.href}
-            >
-              <ArrowIcon />
-              <p className="ml-2 h-7">{item.name}</p>
-            </a>
-          </li>
-        ))}
-      </ul>
-      <p className="mt-8 text-neutral-600 dark:text-neutral-300">
-        © {new Date().getFullYear()} {siteMetaData.author}
-      </p>
+            />
+          ))}
+        </div>
+        <div className="mb-2 flex space-x-2 text-sm text-gray-900 dark:text-gray-100">
+          <div>{siteMetaData.author}</div>
+          <div>{` • `}</div>
+          <div>{`© ${new Date().getFullYear()}`}</div>
+        </div>
+      </div>
     </footer>
   );
 }
