@@ -79,7 +79,7 @@ export default async function Blog(props) {
             url: `${baseUrl}/blog/${post.slug}`,
             author: {
               '@type': 'Person',
-              name: 'My Portfolio',
+              name: 'Nhan Luong',
             },
           }),
         }}
