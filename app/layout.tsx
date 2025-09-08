@@ -76,14 +76,16 @@ export default function RootLayout({
         href="/static/favicons/safari-pinned-tab.svg"
         color="#5bbad5"
       />
-      <body className="antialiased max-w-xl mx-4 mt-8 lg:mx-auto">
-        <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
+      <body className="antialiased max-w-xl mx-4 lg:mx-auto">
+        <div className="flex flex-col min-h-screen">
           <Navbar />
-          {children}
+          <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
+            {children}
+          </main>
           <Footer />
           <Analytics />
           <SpeedInsights />
-        </main>
+        </div>
       </body>
     </html>
   );

@@ -22,8 +22,8 @@ const footerItems: FooterItem[] = [
 
 export default function Footer() {
   return (
-    <footer>
-      <div className="mb-2 mt-16 flex flex-col items-center">
+    <footer className="mb-8">
+      <div className="my-2 flex flex-col items-center">
         <div className="mb-3 flex space-x-4">
           {footerItems.map((item) => (
             <SocialIcon
