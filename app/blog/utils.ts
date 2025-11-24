@@ -38,13 +38,12 @@ function readMDXFile(filePath) {
 function getMDXData(dir) {
   let mdxFiles = getMDXFiles(dir);
   return mdxFiles.map((file) => {
-    let { metadata, content } = readMDXFile(path.join(dir, file));
+    let { metadata } = readMDXFile(path.join(dir, file));
     let slug = path.basename(file, path.extname(file));
 
     return {
       metadata,
       slug,
-      content,
     };
   });
 }
@@ -53,7 +52,23 @@ export function getBlogPosts() {
   return getMDXData(path.join(process.cwd(), 'app', 'blog', 'posts'));
 }
 
-export function formatDate(date: string, includeRelative = false ) {
+export function getBlogPost(slug: string) {
+  let posts = getBlogPosts();
+  let post = posts.find((post) => post.slug === slug);
+  if (!post) {
+    return undefined;
+  }
+
+  let filePath = path.join(process.cwd(), 'app', 'blog', 'posts', `${slug}.mdx`);
+  let { content } = readMDXFile(filePath);
+
+  return {
+    ...post,
+    content,
+  };
+}
+
+export function formatDate(date: string, includeRelative = false) {
   let currentDate = new Date();
   if (!date.includes('T')) {
     date = `${date}T00:00:00`;

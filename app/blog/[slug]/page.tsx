@@ -1,4 +1,4 @@
-import { formatDate, getBlogPosts } from 'app/blog/utils';
+import { formatDate, getBlogPosts, getBlogPost } from 'app/blog/utils';
 import { CustomMDX } from 'app/components/mdx';
 import { baseUrl } from 'app/sitemap';
 import { notFound } from 'next/navigation';
@@ -54,7 +54,7 @@ export async function generateMetadata(props) {
 
 export default async function Blog(props) {
   const params = await props.params;
-  let post = getBlogPosts().find((post) => post.slug === params.slug);
+  let post = getBlogPost(params.slug);
 
   if (!post) {
     notFound();
