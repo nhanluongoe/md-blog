@@ -8,6 +8,7 @@ import { Navbar } from './components/nav';
 import './global.css';
 import { baseUrl } from './sitemap';
 import siteMetaData from './siteMetadata';
+import { ScrollToTop } from './components/scroll-to-top';
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -85,6 +86,7 @@ export default function RootLayout({
           <Footer />
           <Analytics />
           <SpeedInsights />
+          <ScrollToTop />
         </div>
       </body>
     </html>
