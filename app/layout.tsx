@@ -3,12 +3,12 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 import type { Metadata } from 'next';
-import Footer from './components/footer';
-import { Navbar } from './components/nav';
+import Footer from '@/components/footer';
+import { Navbar } from '@/components/nav';
 import './global.css';
 import { baseUrl } from './sitemap';
 import siteMetaData from './siteMetadata';
-import { ScrollToTop } from './components/scroll-to-top';
+import { ScrollToTop } from '@/components/scroll-to-top';
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),

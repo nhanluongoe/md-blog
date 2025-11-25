@@ -1,8 +1,8 @@
 import { formatDate, getBlogPosts, getBlogPost } from 'app/blog/utils';
-import { CustomMDX } from 'app/components/mdx';
+import { CustomMDX } from '@/components/mdx';
 import { baseUrl } from 'app/sitemap';
 import { notFound } from 'next/navigation';
-import { BackHomeButton } from 'app/components/back-home-button';
+import { BackHomeButton } from '@/components/back-home-button';
 
 export async function generateStaticParams() {
   let posts = getBlogPosts();

@@ -1,6 +1,6 @@
 'use client';
 
-import { useScrollToTop } from 'app/hooks/use-scroll-to-top';
+import { useScrollToTop } from '@/hooks/use-scroll-to-top';
 
 export function ScrollToTop() {
     const { isVisible, scrollToTop } = useScrollToTop();
