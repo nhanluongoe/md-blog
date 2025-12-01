@@ -9,6 +9,7 @@ import './global.css';
 import { baseUrl } from './sitemap';
 import siteMetaData from './siteMetadata';
 import { ScrollToTop } from '@/components/scroll-to-top';
+import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -48,8 +49,8 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={cx(
-        'text-black bg-white dark:text-white dark:bg-black',
         GeistSans.variable,
         GeistMono.variable,
       )}
@@ -78,16 +79,23 @@ export default function RootLayout({
         color="#5bbad5"
       />
       <body className="antialiased max-w-xl mx-4 lg:mx-auto">
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
-            {children}
-          </main>
-          <Footer />
-          <Analytics />
-          <SpeedInsights />
-          <ScrollToTop />
-        </div>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="flex flex-col min-h-screen">
+            <Navbar />
+            <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
+              {children}
+            </main>
+            <Footer />
+            <Analytics />
+            <SpeedInsights />
+            <ScrollToTop />
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

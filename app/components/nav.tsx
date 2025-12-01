@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ThemeToggle } from './theme-toggle';
 
 const navItems = {
   '/': {
@@ -32,6 +33,9 @@ export function Navbar() {
                 </Link>
               );
             })}
+          </div>
+          <div className="ml-auto">
+            <ThemeToggle />
           </div>
         </nav>
       </div>

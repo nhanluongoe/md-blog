@@ -32,7 +32,7 @@ const ProjectCard = async ({ title, description, href, year, repo }) => {
             )}
           </h2>
         </div>
-        <div className="flex flex-grow flex-col justify-between">
+        <div className="flex grow flex-col justify-between">
           <p className="md:text-md prose mb-3 max-w-none text-sm text-gray-900 dark:text-gray-300">
             {description}
           </p>
