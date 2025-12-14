@@ -48,7 +48,11 @@ function getMDXData(dir) {
         slug,
       };
     })
-    .filter((post) => post.metadata.draft === 'false');
+    .filter((post) => {
+      const isDraft = post.metadata.draft !== 'false';
+      const isProduction = process.env.NODE_ENV === 'production';
+      return isProduction ? !isDraft : true;
+    });
 }
 
 export function getBlogPosts() {
@@ -95,7 +99,7 @@ export function formatDate(date: string, includeRelative = false) {
   }
 
   let fullDate = targetDate.toLocaleString('en-us', {
-    month: 'long',
+    month: 'short',
     year: 'numeric',
   });
 
